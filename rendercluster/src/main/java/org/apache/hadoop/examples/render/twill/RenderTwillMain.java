@@ -21,15 +21,22 @@ package org.apache.hadoop.examples.render.twill;
 import com.google.common.base.Preconditions;
 import org.apache.hadoop.examples.render.Utils;
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.util.ExitUtil;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.twill.api.TwillController;
 import org.apache.twill.api.TwillRunnerService;
 import org.apache.twill.common.Services;
+import org.apache.twill.filesystem.HDFSLocationFactory;
+import org.apache.twill.filesystem.LocalLocationFactory;
+import org.apache.twill.filesystem.LocationFactory;
 import org.apache.twill.yarn.YarnTwillRunnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -47,16 +54,25 @@ public class RenderTwillMain {
     conf = new YarnConfiguration();
   }
 
+  LocationFactory createLocationFactory() throws IOException {
+    URI fsURI = FileSystem.getDefaultUri(conf);
+    FileSystem fs = FileSystem.get(conf);
+    if (fsURI.getScheme().equals("file")) {
+      return new LocalLocationFactory(new File("target"));
+    } else {
+      return new HDFSLocationFactory(fs, "/tmp/twill");
+    }
+  }
   public void exec(String...args) throws
       ExecutionException,
-      InterruptedException {
+      InterruptedException, IOException {
     List<String> argsList = Arrays.asList(args);
     exec(argsList);
   }
       
   public void exec(List<String> argsList) throws
       ExecutionException,
-      InterruptedException {
+      InterruptedException, IOException {
     RenderArgs params = new RenderArgs(argsList);
     params.parseAndValidate();
 
@@ -70,7 +86,7 @@ public class RenderTwillMain {
 
     final TwillRunnerService twillRunner =
         new YarnTwillRunnerService(
-            conf, zkStr);
+            conf, zkStr, createLocationFactory());
     twillRunner.startAndWait();
 
     RenderRunnable runnable =
