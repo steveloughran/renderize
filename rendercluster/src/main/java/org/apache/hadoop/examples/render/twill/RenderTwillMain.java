@@ -32,69 +32,75 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RenderTwillMain {
   public static Logger log = LoggerFactory.getLogger(RenderTwillMain.class);
   private static volatile TwillController controller;
+  private final YarnConfiguration conf;
 
+  public RenderTwillMain(YarnConfiguration conf) {
+    this.conf = conf;
+  }
 
-  
-  public void exec(String...args) {
+  public RenderTwillMain() {
+    conf = new YarnConfiguration();
+  }
 
+  public void exec(String...args) throws
+      ExecutionException,
+      InterruptedException {
     List<String> argsList = Arrays.asList(args);
-    String command = Utils.join(argsList, ", ", false);
-    try {
+    exec(argsList);
+  }
+      
+  public void exec(List<String> argsList) throws
+      ExecutionException,
+      InterruptedException {
+    RenderArgs params = new RenderArgs(argsList);
+    params.parseAndValidate();
 
-      log.info("Render Twill Main args = {}", command);
-      RenderArgs params = new RenderArgs(args);
-      params.parseAndValidate();
 
+    String zkStr = params.zookeeper;
 
-      String zkStr = params.zookeeper;
+    
+    String rmAddr = conf.get(YarnConfiguration.RM_ADDRESS);
+    Preconditions.checkState(!rmAddr.startsWith("0.0.0.0"),
+        "Resource manager not defined " + rmAddr);
 
-      YarnConfiguration conf = new YarnConfiguration();
-      String rmAddr = conf.get(YarnConfiguration.RM_ADDRESS);
-      Preconditions.checkState(!rmAddr.startsWith("0.0.0.0"),
-          "Resource manager not defined " + rmAddr);
-        
-      final TwillRunnerService twillRunner =
-          new YarnTwillRunnerService(
-              conf, zkStr);
-      twillRunner.startAndWait();
+    final TwillRunnerService twillRunner =
+        new YarnTwillRunnerService(
+            conf, zkStr);
+    twillRunner.startAndWait();
 
-      RenderRunnable runnable = new RenderRunnable(() -> log.info(params.message));
+    RenderRunnable runnable =
+        new RenderRunnable(() -> log.info(params.message));
 
-      controller = null;
+    controller = null;
 
-      Runtime.getRuntime().addShutdownHook(new Thread(() ->
-      {
-        if (controller != null) {
-          controller.stopAndWait();
-        }
-        twillRunner.stopAndWait();
+    Runtime.getRuntime().addShutdownHook(new Thread(() ->
+    {
+      if (controller != null) {
+        controller.stopAndWait();
       }
-      ));
-
-      controller = twillRunner.prepare(runnable)
-                 .addLogHandler(new Slf4JLogHandler(log))
-                 .start();
-
-
-
-      Services.getCompletionFuture(controller).get();
-    } catch (Throwable e) {
-      log.error("command {}\n" +
-                "failed: {}", command, e, e);
-      ExitUtil.terminate(-1, e);
+      twillRunner.stopAndWait();
     }
+    ));
+
+    controller = twillRunner.prepare(runnable)
+                            .addLogHandler(new Slf4JLogHandler(log))
+                            .start();
+
+
+    Services.getCompletionFuture(controller).get();
 
   }
-  
+
   public static void main(String[] args) {
     List<String> argsList = Arrays.asList(args);
     String command = Utils.join(argsList, ", ", false);
     try {
-      new RenderTwillMain().exec(args);
+      new RenderTwillMain().exec(argsList);
     } catch (Throwable e) {
       log.error("command {}\n" +
                 "failed: {}", command, e, e);

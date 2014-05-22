@@ -16,22 +16,22 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render;
+package org.apache.hadop.examples.render
 
-import groovy.util.logging.Slf4j;
-import org.apache.hadoop.examples.render.twill.RenderTwillMain;
-import org.apache.hadoop.examples.render.twill.args.Arguments;
-import org.apache.hadop.examples.render.tools.RenderTestBase;
-import org.junit.Test;
+import org.apache.hadoop.examples.render.twill.RenderTwillMain
+import org.apache.hadoop.examples.render.twill.args.Arguments
+import org.junit.Test
 
-@Slf4j
-public class TestBasicTwillJob extends RenderTestBase implements Arguments {
-
+class TestCLI extends groovy.test.GroovyAssert implements Arguments {
 
   @Test
-  public void testCli() throws Throwable {
-    RenderTwillMain renderer = new RenderTwillMain();
-    renderer.exec(ARG_ZK, getZookeeperQuorum());
+  public void testNoZK() throws Throwable {
+    shouldFail(IllegalArgumentException) {
+      RenderTwillMain renderer = new RenderTwillMain();
+      renderer.exec();
+    }
   }
+
+
 
 }
