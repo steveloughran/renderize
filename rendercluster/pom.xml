@@ -1,0 +1,349 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.apache.hadoop.examples</groupId>
+  <artifactId>renderize</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>renderize</name>
+  <url>http://maven.apache.org</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>steveloughran</id>
+      <name>Steve Loughran</name>
+      <timezone>0</timezone>
+      <organization>Hortonworks</organization>
+      <organizationUrl>http://www.hortonworks.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <properties>
+
+    <!--
+       core artifacts
+       -->
+    <hadoop.version>2.4.0</hadoop.version>
+    <twill.version>0.3.0-incubating-SNAPSHOT</twill.version>
+
+    <!--
+     artifact versions
+    -->
+    <avro.version>1.7.4</avro.version>
+    <bigtop.version>0.7.0</bigtop.version>
+    <commons-codec.version>1.4</commons-codec.version>
+    <commons-digester.version>1.8</commons-digester.version>
+    <commons-configuration.version>1.6</commons-configuration.version>
+    <commons-lang.version>2.6</commons-lang.version>
+    <curator.version>2.4.1</curator.version>
+    <groovy.version>2.3.1</groovy.version>
+    <guava.version>13.0</guava.version>
+    <gson.version>2.2.2</gson.version>
+    <guice.version>3.0</guice.version>
+    <httpclient.version>4.2.5</httpclient.version>
+
+
+    <!--    <jackson.version>1.8.8</jackson.version>-->
+    <jackson.version>1.9.13</jackson.version>
+    <jcommander.version>1.30</jcommander.version>
+    <jersey.version>1.9</jersey.version>
+    <junit.version>4.11</junit.version>
+    <log4j.version>1.2.17</log4j.version>
+
+    <!-- ProtocolBuffer version, used to verify the protoc version and -->
+    <!-- define the protobuf JAR version                               -->
+    <protobuf.version>2.5.0</protobuf.version>
+
+    <slf4j.version>1.7.5</slf4j.version>
+    <stringtemplate.version>2.4.1</stringtemplate.version>
+    <zookeeper.version>3.4.5</zookeeper.version>
+
+
+    <!--  Plugin versions    -->
+    <gmavenVersion>1.5</gmavenVersion>
+    <gmavenProviderSelection>2.0</gmavenProviderSelection>
+    <buildnumber-maven-plugin.version>1.2</buildnumber-maven-plugin.version>
+
+<!--
+    <groovy-eclipse-compiler.version>2.8.0-01</groovy-eclipse-compiler.version>
+-->
+    <groovy-eclipse-compiler.version>2.9.0-01-SNAPSHOT</groovy-eclipse-compiler.version>
+    
+    <groovy-eclipse-batch.version>2.3.1-01-SNAPSHOT</groovy-eclipse-batch.version>
+    <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
+    <maven.cobertura.version>2.5.2</maven.cobertura.version>
+    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+    <maven-enforcer-plugin.version>1.0</maven-enforcer-plugin.version>
+    <maven-jar-plugin.version>2.3.1</maven-jar-plugin.version>
+    <maven.javadoc.version>2.8</maven.javadoc.version>
+    <maven.project.version>2.4</maven.project.version>
+    <maven.properties.version>1.0-alpha-2</maven.properties.version>
+    <maven-project-info-reports-plugin.version>2.6
+    </maven-project-info-reports-plugin.version>
+    <maven-site-plugin.version>3.3</maven-site-plugin.version>
+    <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+    <maven-surefire-plugin.version>2.16</maven-surefire-plugin.version>
+    <maven-surefire-report-plugin.version>2.16
+    </maven-surefire-report-plugin.version>
+    <maven-failsafe-plugin.version>2.16</maven-failsafe-plugin.version>
+
+    <!-- build options-->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <build.dependency.fail.on.warning>true</build.dependency.fail.on.warning>
+    <project.java.src.version>1.8</project.java.src.version>
+    <build.redirect.test.output.to.file>false</build.redirect.test.output.to.file>
+    <maven-doxia-module-markdown.version>1.4</maven-doxia-module-markdown.version>
+
+  </properties>
+  <repositories>
+    <repository>
+      <id>Codehaus</id>
+      <url>http://nexus.codehaus.org/snapshots/.</url>
+    </repository>
+<!--
+    <repository>
+      <id>ASF Staging</id>
+      <url>https://repository.apache.org/content/groups/staging/</url>
+    </repository>
+-->
+  </repositories>
+
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Codehaus</id>
+      <url>http://nexus.codehaus.org/snapshots/.</url>
+    </pluginRepository>
+<!--
+    <pluginRepository>
+      <id>ASF Staging</id>
+      <url>https://repository.apache.org/content/groups/staging/</url>
+    </pluginRepository>
+-->
+  </pluginRepositories>
+  <build>
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <compilerId>groovy-eclipse-compiler</compilerId>
+          <!-- set verbose to be true if you want to debug compile problems -->
+          <!-- <verbose>true</verbose> -->
+          <source>${project.java.src.version}</source>
+          <target>${project.java.src.version}</target>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-eclipse-compiler</artifactId>
+            <version>${groovy-eclipse-compiler.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-eclipse-batch</artifactId>
+            <version>${groovy-eclipse-batch.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      
+      <!--read in a build.properties file if defined-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>${maven.properties.version}</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <quiet>true</quiet>
+              <files>
+                <file>build.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${maven-surefire-report-plugin.version}</version>
+        <inherited>true</inherited>
+        <configuration>
+          <showSuccess>false</showSuccess>
+          <outputDirectory>${basedir}/target/surefire-reports</outputDirectory>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <id>unit-tests</id>
+            <reports>
+              <report>report-only</report>
+            </reports>
+          </reportSet>
+          <reportSet>
+            <id>integration-tests</id>
+            <reports>
+              <report>failsafe-report-only</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <inherited>true</inherited>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>${maven-project-info-reports-plugin.version}</version>
+        <configuration>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </reporting>
+
+
+    <dependencies>
+
+
+      <!--
+      core artifacts
+      -->
+
+      <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <version>${hadoop.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>${groovy.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-client</artifactId>
+        <version>${hadoop.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-minicluster</artifactId>
+        <version>${hadoop.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun.jersey.jersey-test-framework</groupId>
+            <artifactId>jersey-test-framework-grizzly2</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-hdfs</artifactId>
+        <version>${hadoop.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>tomcat</groupId>
+            <artifactId>jasper-runtime</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.twill</groupId>
+        <artifactId>twill-api</artifactId>
+        <version>${twill.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.twill</groupId>
+        <artifactId>twill-yarn</artifactId>
+        <version>${twill.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.twill</groupId>
+        <artifactId>twill-ext</artifactId>
+        <version>${twill.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>com.beust</groupId>
+        <artifactId>jcommander</artifactId>
+        <version>${jcommander.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+    </dependencies>
+</project>
