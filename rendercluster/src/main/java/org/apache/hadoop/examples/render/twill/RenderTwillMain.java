@@ -19,13 +19,16 @@
 package org.apache.hadoop.examples.render.twill;
 
 import com.google.common.base.Preconditions;
-import org.apache.hadoop.examples.render.Utils;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.Service;
+import org.apache.hadoop.examples.render.tools.Utils;
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.util.ExitUtil;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.twill.api.TwillController;
 import org.apache.twill.api.TwillRunnerService;
+import org.apache.twill.api.logging.PrinterLogHandler;
 import org.apache.twill.common.Services;
 import org.apache.twill.filesystem.HDFSLocationFactory;
 import org.apache.twill.filesystem.LocalLocationFactory;
@@ -36,15 +39,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class RenderTwillMain {
-  public static Logger log = LoggerFactory.getLogger(RenderTwillMain.class);
+  public static final Logger log = LoggerFactory.getLogger(RenderTwillMain.class);
   private static volatile TwillController controller;
   private final YarnConfiguration conf;
+  private File dir;
 
   public RenderTwillMain(YarnConfiguration conf) {
     this.conf = conf;
@@ -60,9 +65,10 @@ public class RenderTwillMain {
     if (fsURI.getScheme().equals("file")) {
       return new LocalLocationFactory(new File("target"));
     } else {
-      return new HDFSLocationFactory(fs, "/tmp/twill");
+      return new HDFSLocationFactory(fs, fs.getHomeDirectory()+"/twill");
     }
   }
+  
   public void exec(String...args) throws
       ExecutionException,
       InterruptedException, IOException {
@@ -70,12 +76,27 @@ public class RenderTwillMain {
     exec(argsList);
   }
       
+  public void touch(File dir, String file) {
+    File f = new File(dir, file);
+    try {
+      dir.mkdirs();
+      f.createNewFile();
+    } catch (IOException e) {
+      log.warn("Failed to create {}: {}", f, e);
+    }
+  }
   public void exec(List<String> argsList) throws
       ExecutionException,
       InterruptedException, IOException {
     RenderArgs params = new RenderArgs(argsList);
     params.parseAndValidate();
 
+    if (params.dest == null) {
+      params.dest = new File("dest");
+    }
+    final File dest =params.dest.getAbsoluteFile();
+    dest.mkdirs();
+    
 
     String zkStr = params.zookeeper;
 
@@ -89,9 +110,6 @@ public class RenderTwillMain {
             conf, zkStr, createLocationFactory());
     twillRunner.startAndWait();
 
-    RenderRunnable runnable =
-        new RenderRunnable(() -> log.info(params.message));
-
     controller = null;
 
     Runtime.getRuntime().addShutdownHook(new Thread(() ->
@@ -103,12 +121,24 @@ public class RenderTwillMain {
     }
     ));
 
-    controller = twillRunner.prepare(runnable)
-                            .addLogHandler(new Slf4JLogHandler(log))
-                            .start();
+    controller = twillRunner.prepare(
+        new RenderRunnable(
+            () -> {
+              log.info(params.message);
+              touch(dest,"runner");
+            }
+            
+        ))
+//          .addLogHandler(new Slf4JLogHandler(log))
+        .addLogHandler(new PrinterLogHandler(new PrintWriter(System.out)))
+        
+        .start();
 
 
-    Services.getCompletionFuture(controller).get();
+    ListenableFuture<Service.State> future =
+        Services.getCompletionFuture(controller);
+    future.get();
+    
 
   }
 

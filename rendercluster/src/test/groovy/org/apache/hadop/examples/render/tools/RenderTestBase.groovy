@@ -88,7 +88,7 @@ class RenderTestBase extends groovy.test.GroovyAssert {
   public static void setupYarn() {
     miniCluster = new MiniYARNCluster(
         "yarn",
-        4,
+        1,
         1,
         1)
     run(miniCluster)    
@@ -160,4 +160,14 @@ class RenderTestBase extends groovy.test.GroovyAssert {
 
   }
 
+  public void killJavaProcesses(String grepString, int signal) {
+
+    GString bashCommand = "jps -l| grep ${grepString} | awk '{print \$1}' | xargs kill $signal"
+    log.info("Bash command = $bashCommand")
+    Process bash = ["bash", "-c", bashCommand].execute()
+    bash.waitFor()
+
+    log.info(bash.in.text)
+    log.error(bash.err.text)
+  }
 }

@@ -16,12 +16,17 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render;
+package org.apache.hadoop.examples.render.tools;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.yarn.api.ApplicationConstants;
+
+import static org.apache.hadoop.yarn.conf.YarnConfiguration.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,8 +65,28 @@ public class Utils {
 */
 
 
-    return (trailing || b.length()==0)?
+    return (trailing || b.length() == 0) ?
            b.toString()
-                    : (b.substring(0, b.length() - 1));
+                                         : (b.substring(0, b.length() - 1));
+  }
+
+
+  /**
+   * This is only here to write correct code for the "secrets of YARN apps"
+   * talk.
+   */
+  public static String buildCP(Configuration conf) {
+    StringBuilder cp = new StringBuilder(
+        ApplicationConstants.Environment.CLASSPATH.$());
+    cp.append("/").append("./conf");
+
+    String[] ycp = conf.getStrings(
+        "yarn.application.classpath",
+        DEFAULT_YARN_CROSS_PLATFORM_APPLICATION_CLASSPATH);
+    List<String> ycpl = Arrays.asList(ycp);
+    ycpl.stream().forEach(
+        (e) -> cp.append(e).append('/')
+    );
+    return cp.toString();
   }
 }

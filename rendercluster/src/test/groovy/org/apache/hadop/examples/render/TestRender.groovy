@@ -21,6 +21,7 @@ package org.apache.hadop.examples.render
 import org.apache.hadoop.examples.render.twill.RenderTwillMain
 import org.apache.hadoop.examples.render.twill.args.Arguments
 import org.apache.hadop.examples.render.tools.RenderTestBase
+import org.junit.After
 import org.junit.Test
 
 class TestRender extends RenderTestBase implements Arguments {
@@ -35,8 +36,13 @@ class TestRender extends RenderTestBase implements Arguments {
 
   @Test
   public void testExec() throws Throwable {
-    exec([])
+    exec([ARG_DEST,"target/out"])
     
   }
   
+  @After
+  public void killLaunhcer() {
+    killJavaProcesses("TwillLauncher", 9)
+    
+  }
 }

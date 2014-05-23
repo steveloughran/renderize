@@ -22,9 +22,9 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.examples.render.Utils;
 import org.apache.hadoop.fs.Path;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +55,9 @@ public class RenderArgs implements Arguments {
   
   @Parameter(names = {ARG_ZOOKEEPER, ARG_ZK})
   public String zookeeper;
+  
+  @Parameter(names = ARG_DEST,description = "dest dir")
+  public File dest;
 
   @Parameter(names = {TEXT},
       description = "message to echo")
