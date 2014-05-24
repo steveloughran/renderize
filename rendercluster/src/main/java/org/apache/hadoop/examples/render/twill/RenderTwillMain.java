@@ -23,6 +23,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Service;
 import org.apache.hadoop.examples.render.tools.Utils;
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
+import org.apache.hadoop.examples.render.twill.runnables.GenericRunnable;
+import org.apache.hadoop.examples.render.twill.runnables.StdoutRunnable;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ExitUtil;
@@ -91,7 +93,8 @@ public class RenderTwillMain {
       ExecutionException,
       InterruptedException, IOException {
     RenderArgs params = new RenderArgs(argsList);
-    params.parseAndValidate();
+    params.parse();
+    params.validateForMain();
 
     if (params.dest == null) {
       params.dest = new File("dest");
@@ -124,19 +127,10 @@ public class RenderTwillMain {
     }
     ));
 
-    controller = twillRunner.prepare(
-        new RenderRunnable(
-            (ctx) -> {
-              log.info(params.message);
-              touch(dest,"runner");
-              Thread.sleep(30000);
-              System.exit(-1);
-            }
-            
-        ))
+    controller = twillRunner.prepare(new StdoutRunnable())
 //          .addLogHandler(new Slf4JLogHandler(log))
         .addLogHandler(new PrinterLogHandler(new PrintWriter(System.out)))
-        
+        .withApplicationArguments(params.getArguments())
         .start();
 
 

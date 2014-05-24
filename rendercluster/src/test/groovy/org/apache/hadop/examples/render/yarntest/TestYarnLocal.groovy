@@ -19,8 +19,10 @@
 package org.apache.hadop.examples.render.yarntest
 
 import groovy.util.logging.Slf4j
-import org.apache.hadoop.examples.render.twill.RenderRunnable
-import org.apache.hadop.examples.render.tools.GroovyRenderRunnable
+import org.apache.hadoop.examples.render.twill.Slf4JLogHandler
+import org.apache.hadoop.examples.render.twill.args.Arguments
+import org.apache.hadoop.examples.render.twill.args.RenderArgs
+import org.apache.hadoop.examples.render.twill.runnables.StdoutRunnable
 import org.apache.twill.api.TwillController
 import org.apache.twill.api.TwillRunner
 import org.apache.twill.api.logging.PrinterLogHandler
@@ -41,16 +43,21 @@ class TestYarnLocal extends BaseYarnTest {
   @Test
   public void testInitFail()
   throws InterruptedException, ExecutionException, TimeoutException {
-    TwillRunner runner = YarnTestUtils.getTwillRunner();
-    def instance = GroovyRenderRunnable.instance { System.out.println("hello") }
-    TwillController controller = runner.prepare(
-        instance
-    )
-      .addLogHandler(
-        new PrinterLogHandler(new PrintWriter(System.out)))
-      .start();
+    TwillRunner runner = YarnTestUtils.twillRunner;
 
-    Services.getCompletionFuture(controller).get(2, TimeUnit.MINUTES);
+
+
+    def args = [Arguments.ARG_MESSAGE, "text message"]
+    new RenderArgs(args).parse()
+    
+    TwillController controller =
+        runner.prepare(new StdoutRunnable())
+          .withApplicationArguments(args)
+          .addLogHandler(new PrinterLogHandler(new PrintWriter(System.out)))
+          .addLogHandler(new Slf4JLogHandler(log))
+          .start();
+
+    Services.getCompletionFuture(controller).get(1, TimeUnit.MINUTES);
   }
 
 }

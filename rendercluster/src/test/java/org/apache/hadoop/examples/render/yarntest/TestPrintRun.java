@@ -18,8 +18,7 @@
 
 package org.apache.hadoop.examples.render.yarntest;
 
-import org.apache.hadoop.examples.render.twill.RenderRunnable;
-import org.apache.hadop.examples.render.tools.GroovyRenderRunnable;
+import org.apache.hadoop.examples.render.twill.runnables.GenericRunnable;
 import org.apache.twill.api.TwillController;
 import org.apache.twill.api.TwillRunner;
 import org.apache.twill.api.logging.PrinterLogHandler;
@@ -39,7 +38,7 @@ public class TestPrintRun extends BaseYarnTest {
       throws InterruptedException, ExecutionException, TimeoutException {
     TwillRunner runner = YarnTestUtils.getTwillRunner();
     TwillController controller = runner.prepare(
-        new RenderRunnable((ctx)-> System.out.println("hello"))
+        new GenericRunnable((ctx)-> System.out.println("hello"))
     )
                                        .addLogHandler(
                                            new PrinterLogHandler(

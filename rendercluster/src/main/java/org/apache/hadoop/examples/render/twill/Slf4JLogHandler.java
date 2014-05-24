@@ -40,12 +40,16 @@ public class Slf4JLogHandler implements LogHandler {
     switch (logEntry.getLogLevel()) {
       case TRACE:
         log.trace(message);
+        break;
       case DEBUG:
         log.debug(message);
+        break;
       case INFO:
         log.info(message);
+        break;
       case WARN:
         log.warn(message);
+        break;
       case ERROR:
         log.error(message);
     }
@@ -57,21 +61,21 @@ public class Slf4JLogHandler implements LogHandler {
    * @param logEntry entry
    * @return
    */
-  public String formatLogEntry(LogEntry logEntry) {
+  public static String formatLogEntry(LogEntry logEntry) {
     String utc = timestampToUTC(logEntry.getTimestamp());
     return String.format(
-        "[%4$s] %2$ %3$-5$s %3$s [%5$s] %6$s:%7$s(%8$s:%9$d) - %10$s\n",
+        "[%4$s@%5$s] %3$5s %6$s:%7$s(%8$s:%9$d) - %10$s\n",
         
         utc,                                              // 1
         logEntry.getLogLevel().name(),
         getShortenLoggerName(logEntry.getLoggerName()),
-        logEntry.getHost(),
         logEntry.getThreadName(),
-        getSimpleClassName(logEntry.getSourceClassName()), // 5
+        logEntry.getHost(),   // 5
+        getSimpleClassName(logEntry.getSourceClassName()), 
         logEntry.getSourceMethodName(),
         logEntry.getFileName(),
-        logEntry.getLineNumber(),
-        logEntry.getMessage(),                             // 9
+        logEntry.getLineNumber(), //9
+        logEntry.getMessage(),                             
         logEntry.getLoggerName(),
         logEntry.getSourceClassName()
 
@@ -79,11 +83,11 @@ public class Slf4JLogHandler implements LogHandler {
   }
 
   @SuppressWarnings("CallToDateToString")
-  private String timestampToUTC(long timestamp) {
+  private static String timestampToUTC(long timestamp) {
     return new Date(timestamp).toString();
   }
 
-  private String getShortenLoggerName(String loggerName) {
+  private static String getShortenLoggerName(String loggerName) {
     StringBuilder builder = new StringBuilder();
     String previous = null;
     for (String part : Splitter.on('.').split(loggerName)) {
@@ -95,7 +99,7 @@ public class Slf4JLogHandler implements LogHandler {
     return builder.append(previous).toString();
   }
 
-  private String getSimpleClassName(String className) {
+  private static String getSimpleClassName(String className) {
     return className.substring(className.lastIndexOf('.') + 1);
   }
 

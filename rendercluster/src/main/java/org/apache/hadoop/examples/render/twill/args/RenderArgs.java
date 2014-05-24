@@ -34,19 +34,23 @@ import java.util.List;
 public class RenderArgs implements Arguments {
 
 
-  public static final String TEXT = "--text";
-  private final Collection<String> argsList;
+  
+  private final Collection<String> arguments;
   public final JCommander commander;
 
   public RenderArgs(String[] args) {
     this(Arrays.asList(args));
   }
 
-  public RenderArgs(Collection<String> argsList) {
-    Preconditions.checkNotNull(argsList);
-    argsList.stream().forEach(Preconditions::checkNotNull);
-    this.argsList = argsList; 
+  public RenderArgs(Collection<String> arguments) {
+    Preconditions.checkNotNull(arguments);
+    arguments.stream().forEach(Preconditions::checkNotNull);
+    this.arguments = arguments; 
     commander = new JCommander(this);
+  }
+
+  public Collection<String> getArguments() {
+    return arguments;
   }
 
   @Parameter(names = "help", help = true)
@@ -61,24 +65,31 @@ public class RenderArgs implements Arguments {
   @Parameter(names = ARG_DEST,description = "dest dir")
   public File dest;
 
-  @Parameter(names = {TEXT},
+  @Parameter(names = {ARG_MESSAGE},
       description = "message to echo")
-  public String message;
+  public String message = "";
   
   @Parameter(names = {"--image"},
       converter = PathArgumentConverter.class)
   public Path image;
 
   
-  public void parseAndValidate() {
+  public void parse() {
     
-    String[] args = argsList.toArray(new String[argsList.size()]);
+    String[] args = arguments.toArray(new String[arguments.size()]);
     
     commander.parse(args);
+
+  }
+  
+  
+  public void validateForMain() {
 
     checkSet(ARG_ZOOKEEPER, zookeeper);
     checkSet(ARG_ZOOKEEPER, zookeeper);
   }
+  
+  
 
   private void checkSet(String name, String val) {
     Preconditions.checkArgument(StringUtils.isNotEmpty(val),

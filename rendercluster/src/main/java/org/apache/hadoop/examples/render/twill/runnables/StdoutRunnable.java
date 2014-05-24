@@ -16,30 +16,26 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render.twill;
+package org.apache.hadoop.examples.render.twill.runnables;
 
+import org.apache.hadoop.examples.render.twill.args.RenderArgs;
 import org.apache.twill.api.AbstractTwillRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class RenderRunnable extends AbstractTwillRunnable {
-  public static Logger log = LoggerFactory.getLogger(RenderRunnable.class);
-
-  private final RenderTask task;
-
-  public RenderRunnable(RenderTask task) {
-    this.task = task;
-  }
+public class StdoutRunnable extends AbstractTwillRunnable{
+  public static final String MESSAGE = "message";
 
   @Override
   public void run() {
-    try {
-      task.run(getContext());
-    } catch (Exception e) {
-      log.error("Exception in task {}", e);
-    }
-
+    String[] arguments = getContext().getApplicationArguments();
+    RenderArgs parms = new RenderArgs(arguments);
+    parms.parse();
+    String msg = parms.message;
+    out("================================");
+    out(msg);
+    out("================================");
   }
-  
-  
+
+  protected void out(String msg) {
+    System.out.println(msg);
+  }
 }

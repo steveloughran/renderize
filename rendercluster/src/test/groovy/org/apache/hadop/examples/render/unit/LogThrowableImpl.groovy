@@ -16,26 +16,45 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render.twill.args;
+package org.apache.hadop.examples.render.unit
 
-/**
- * Here are all the arguments that may be parsed by the client or server
- * command lines. 
- */
-public interface Arguments {
+import org.apache.twill.api.logging.LogThrowable
 
-  String ARG_DEBUG = "--debug";
-  String ARG_DEST = "--dest";
-  String ARG_DEFINE = "-D";
-  String ARG_EXITCODE = "--exitcode";
-  String ARG_FILESYSTEM = "--fs";
-  String ARG_HELP = "--help";
-  String ARG_MANAGER = "--manager";
-  String ARG_RESOURCE_MANAGER = "--rm";
-  String ARG_MESSAGE = "--text";
-  String ARG_VERBOSE = "--verbose";
-  String ARG_WAIT = "--wait";
-  String ARG_ZOOKEEPER = "--zookeeper";
-  String ARG_ZK = "--zk";
+class LogThrowableImpl implements LogThrowable{
 
+  String className, message;
+  LogThrowable cause;
+  StackTraceElement[] stackTraces;
+
+  void setClassName(String className) {
+    this.className = className
+  }
+
+  void setMessage(String message) {
+    this.message = message
+  }
+
+  void setCause(LogThrowable cause) {
+    this.cause = cause
+  }
+
+  void setStackTraces(StackTraceElement[] stackTraces) {
+    this.stackTraces = stackTraces
+  }
+
+  String getClassName() {
+    return className
+  }
+
+  String getMessage() {
+    return message
+  }
+
+  LogThrowable getCause() {
+    return cause
+  }
+
+  StackTraceElement[] getStackTraces() {
+    return stackTraces
+  }
 }
