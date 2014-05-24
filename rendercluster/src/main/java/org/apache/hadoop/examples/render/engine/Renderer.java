@@ -20,10 +20,7 @@ package org.apache.hadoop.examples.render.engine;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
@@ -32,29 +29,40 @@ import java.awt.image.BufferedImage;
  */
 public class Renderer {
   
-  public String text;
   public Font font;
 
   BufferedImage image;
   int width;
   int height;
 
-  public Renderer(String text, int width, int height) {
-    this.text = text;
+  public Renderer(int width, int height) {
     this.width = width;
     this.height = height;
     image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    chooseFont(Font.SANS_SERIF, 0, 48);
+    clear();
+  }
+  
+  public void chooseFont(String fontname, int attrs, int size) {
+    font = new Font(fontname, attrs, size);
   }
 
-  public void render(int x, int y, String font, int size) {
+  public void clear() {
+    Graphics2D gc = image.createGraphics();
+    gc.setColor(Color.black);
+    gc.drawRect(0, 0, width, height);
+    gc.dispose();
+  }
+
+  public void render(int x, int y, String text) {
 
     Graphics2D gc = image.createGraphics();
     gc.setColor(Color.white);
-    gc.clearRect(0, 0, width, height);
     gc.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         RenderingHints.VALUE_ANTIALIAS_ON);
     gc.setRenderingHint(RenderingHints.KEY_RENDERING,
         RenderingHints.VALUE_RENDER_QUALITY);
+    gc.setFont(font);
     gc.drawString(text, x, y);
     gc.dispose();
 

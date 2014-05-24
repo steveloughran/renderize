@@ -18,9 +18,11 @@
 
 package org.apache.hadop.examples.render.unit
 
+import groovy.transform.CompileStatic
 import org.apache.twill.api.logging.LogEntry
 import org.apache.twill.api.logging.LogThrowable
 
+@CompileStatic
 class LogEntryImpl implements LogEntry {
   
   String loggerName, host, sourceClassName, sourceMethodName, fileName

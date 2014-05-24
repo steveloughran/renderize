@@ -25,12 +25,17 @@ import org.apache.twill.api.TwillContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GenericRunnable extends AbstractTwillRunnable {
-  public static Logger log = LoggerFactory.getLogger(GenericRunnable.class);
+/**
+ * Attempt to make lambda expressions runnable. Doesn't work, because
+ * they don't have a class at the far end, lambda expressions can't extend
+ * base classes
+ */
+public class LambdaRunnable extends AbstractTwillRunnable {
+  public static Logger log = LoggerFactory.getLogger(LambdaRunnable.class);
 
   private final RenderTask task;
 
-  public GenericRunnable(RenderTask task) {
+  public LambdaRunnable(RenderTask task) {
     Preconditions.checkNotNull(task, "null task argument");
     this.task = task;
   }

@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.Path;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,17 +61,24 @@ public class RenderArgs implements Arguments {
   @Parameter(names = {ARG_ZOOKEEPER, ARG_ZK})
   public String zookeeper;
   
-  @Parameter(names = ARG_DEST,description = "dest dir")
-  public File dest;
+  @Parameter(names = ARG_DEST,description = "dest dir",
+      converter = PathArgumentConverter.class)
+  public Path dest;
 
   @Parameter(names = {ARG_MESSAGE},
       description = "message to echo")
   public String message = "";
   
-  @Parameter(names = {"--image"},
+  @Parameter(names = {ARG_IMAGE},
       converter = PathArgumentConverter.class)
   public Path image;
 
+  @Parameter(names = ARG_WIDTH)
+  public int width;
+
+  @Parameter(names = ARG_HEIGHT)
+  public int height;
+  
   
   public void parse() {
     
@@ -86,9 +92,16 @@ public class RenderArgs implements Arguments {
   public void validateForMain() {
 
     checkSet(ARG_ZOOKEEPER, zookeeper);
-    checkSet(ARG_ZOOKEEPER, zookeeper);
+    checkSet(ARG_RESOURCE_MANAGER, zookeeper);
+    checkInRange(ARG_HEIGHT, height);
+    checkInRange(ARG_WIDTH, width);
+
   }
-  
+
+  private void checkInRange(String name, int val) {
+    Preconditions.checkArgument(val > 0,
+        "Argument " + name + " out of range: " + val);
+  }
   
 
   private void checkSet(String name, String val) {

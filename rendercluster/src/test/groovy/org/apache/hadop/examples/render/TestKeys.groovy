@@ -16,32 +16,8 @@
  * limitations under the License.
  */
 
-package org.apache.hadop.examples.render.tools
+package org.apache.hadop.examples.render
 
-import org.apache.twill.api.AbstractTwillRunnable
-
-class GroovyRenderRunnable extends AbstractTwillRunnable {
-
-  final Closure action;
-
-  GroovyRenderRunnable(Map<String, String> args, Closure action) {
-    super(args)
-    this.action = action
-    assert action != null
-  }
-
-  GroovyRenderRunnable(Closure action) {
-    this.action = action
-    assert action != null
-  }
-
-  @Override
-  void run() {
-    action();
-  }
-
-  static GroovyRenderRunnable instance(Closure closure) {
-    new GroovyRenderRunnable(closure)
-  }
-  
+class TestKeys {
+  public static final String NAILS_JPG = "src/test/resources/images/nails.jpg"
 }

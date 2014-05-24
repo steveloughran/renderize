@@ -23,7 +23,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.Service;
 import org.apache.hadoop.examples.render.tools.Utils;
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
-import org.apache.hadoop.examples.render.twill.runnables.GenericRunnable;
 import org.apache.hadoop.examples.render.twill.runnables.StdoutRunnable;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -52,7 +51,6 @@ public class RenderTwillMain {
   public static final Logger log = LoggerFactory.getLogger(RenderTwillMain.class);
   private static volatile TwillController controller;
   private final YarnConfiguration conf;
-  private File dir;
 
   public RenderTwillMain(YarnConfiguration conf) {
     this.conf = conf;
@@ -96,11 +94,7 @@ public class RenderTwillMain {
     params.parse();
     params.validateForMain();
 
-    if (params.dest == null) {
-      params.dest = new File("dest");
-    }
-    final File dest =params.dest.getAbsoluteFile();
-    dest.mkdirs();
+
     
 
     String zkStr = params.zookeeper;

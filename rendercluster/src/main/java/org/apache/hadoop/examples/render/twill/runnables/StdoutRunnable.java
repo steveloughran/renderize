@@ -27,9 +27,9 @@ public class StdoutRunnable extends AbstractTwillRunnable{
   @Override
   public void run() {
     String[] arguments = getContext().getApplicationArguments();
-    RenderArgs parms = new RenderArgs(arguments);
-    parms.parse();
-    String msg = parms.message;
+    RenderArgs params = new RenderArgs(arguments);
+    params.parse();
+    String msg = params.message;
     out("================================");
     out(msg);
     out("================================");

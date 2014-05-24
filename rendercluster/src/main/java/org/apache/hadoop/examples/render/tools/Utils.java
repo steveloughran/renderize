@@ -19,12 +19,14 @@
 package org.apache.hadoop.examples.render.tools;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.ApplicationConstants;
 
 import static org.apache.hadoop.yarn.conf.YarnConfiguration.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,32 +44,23 @@ public class Utils {
    */
   public static Logger log = LoggerFactory.getLogger(Utils.class);
 
-  public static <T> List<String> collectionToStringList(Collection<T> c) {
+  public static List<String> collectionToStringList(Collection c) {
     List<String> l = new ArrayList<>(c.size());
     Stream<String> stringified = c.stream().map(Object::toString);
     return stringified.collect(Collectors.toList());
   }
 
-  public static <T> String join(Collection<T> collection,
+  public static String join(Collection collection,
       String separator,
       boolean trailing) {
     StringBuilder b = new StringBuilder();
 
     collection.stream().forEach(
-        (o) ->
-            b.append(o.toString()).append(separator)
+        (o) -> b.append(o.toString()).append(separator)
     );
 
-/*
-    collection.stream().map(
-        ((o) -> o.toString() + separator))
-              .reduce("", ((l, r) -> l + r));
-*/
-
-
     return (trailing || b.length() == 0) ?
-           b.toString()
-                                         : (b.substring(0, b.length() - 1));
+           b.toString() : (b.substring(0, b.length() - 1));
   }
 
 
@@ -88,5 +81,9 @@ public class Utils {
         (e) -> cp.append(e).append('/')
     );
     return cp.toString();
+  }
+
+  public static Path fileToPath(File file) {
+    return new Path(file.getAbsoluteFile().toURI());
   }
 }

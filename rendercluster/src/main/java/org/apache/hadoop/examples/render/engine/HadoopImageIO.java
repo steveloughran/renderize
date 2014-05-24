@@ -24,6 +24,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -34,8 +35,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.imageio.stream.MemoryCacheImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Iterator;
@@ -46,13 +45,13 @@ import java.util.Iterator;
  * For an API that's existed since 2001, the javax.imageio package is
  * woefully short of examples.
  */
-public class HFDSImageIO {
+public class HadoopImageIO {
 
   public static final String JPEG = "jpeg";
   final Configuration conf;
   final FileSystem fs;
 
-  public HFDSImageIO(Configuration conf,
+  public HadoopImageIO(Configuration conf,
       FileSystem fs) {
     this.conf = Preconditions.checkNotNull(conf);
     this.fs = Preconditions.checkNotNull(fs);
@@ -60,20 +59,25 @@ public class HFDSImageIO {
 
   public ImageInputStream openForReading(Path path) throws IOException {
     FSDataInputStream fsDataInputStream = fs.open(path);
-    return new MemoryCacheImageInputStream(fsDataInputStream);
+    return ImageIO.createImageInputStream(fsDataInputStream);
   }
 
   public ImageOutputStream openForWriting(Path path, boolean overwrite) throws
       IOException {
 
     FSDataOutputStream fsDataOutputStream = fs.create(path, overwrite);
-    return new MemoryCacheImageOutputStream(fsDataOutputStream);
+    return ImageIO.createImageOutputStream(fsDataOutputStream);
   }
 
   public void writeJPEG(BufferedImage image, Path path, boolean overwrite,
       float compression) throws IOException {
-    ImageOutputStream out = openForWriting(path, overwrite);
-    writeJPEG(image, out, compression);
+
+    try(FSDataOutputStream fsDataOutputStream = fs.create(path, overwrite)) {
+      ImageOutputStream out = ImageIO.createImageOutputStream(fsDataOutputStream);
+      writeJPEG(image, out, compression);
+      fsDataOutputStream.flush();
+      fsDataOutputStream.close();
+    }
   }
 
   public void writeJPEG(BufferedImage image,
@@ -85,15 +89,19 @@ public class HFDSImageIO {
     Preconditions.checkState(writerIterator.hasNext(),
         "JVM lacks JPEG writer");
     ImageWriter writer = writerIterator.next();
-    IIOMetadata imageMetaData = writer.getDefaultImageMetadata(
+    IIOMetadata imageMetaData = null;
+    imageMetaData = writer.getDefaultImageMetadata(
         new ImageTypeSpecifier(image), null);
     ImageWriteParam params = writer.getDefaultWriteParam();
     params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
     params.setCompressionQuality(compression);
+    
     writer.setOutput(out);
     writer.write(imageMetaData,
         new IIOImage(image, null, null),
         null);
+    out.flush();
+    out.close();
   }
 
   public BufferedImage readJPEG(Path path) throws IOException {
@@ -102,14 +110,18 @@ public class HFDSImageIO {
   }
 
   public BufferedImage readJPEG(ImageInputStream in) throws IOException {
-    Iterator<ImageReader> readerIterator =
-        ImageIO.getImageReadersBySuffix(JPEG);
-    Preconditions.checkState(readerIterator.hasNext(),
-        "JVM lacks JPEG reader");
-    ImageReader reader = readerIterator.next();
-    reader.setInput(in);
-    BufferedImage image = reader.read(0, null);
-    return image;
+    try {
+      Iterator<ImageReader> readerIterator =
+          ImageIO.getImageReadersBySuffix(JPEG);
+      Preconditions.checkState(readerIterator.hasNext(),
+          "JVM lacks JPEG reader");
+      ImageReader reader = readerIterator.next();
+      reader.setInput(in);
+      BufferedImage image = reader.read(0, null);
+      return image;
+    } finally {
+      in.close();
+    }
   }
   
   

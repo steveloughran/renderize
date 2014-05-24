@@ -16,31 +16,27 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render.twill.args;
+package org.apache.hadop.examples.render.yarntest
 
-/**
- * Here are all the arguments that may be parsed by the client or server
- * command lines. 
- */
-public interface Arguments {
+import org.apache.hadoop.examples.render.yarntest.YarnTestUtils
+import org.apache.twill.api.TwillRunner
+import org.junit.BeforeClass
+import org.junit.ClassRule
+import org.junit.rules.TemporaryFolder
 
-  String ARG_DEBUG = "--debug";
-  String ARG_DEST = "--dest";
-  String ARG_DEFINE = "-D";
-  String ARG_EXITCODE = "--exitcode";
-  String ARG_FILESYSTEM = "--fs";
-  String ARG_HELP = "--help";
+class BaseYarnGroovyTest extends groovy.test.GroovyAssert {
 
-  String ARG_IMAGE = "--image";
-  String ARG_MANAGER = "--manager";
-  String ARG_RESOURCE_MANAGER = "--rm";
-  String ARG_MESSAGE = "--text";
-  String ARG_VERBOSE = "--verbose";
-  String ARG_WAIT = "--wait";
-  String ARG_ZOOKEEPER = "--zookeeper";
-  String ARG_ZK = "--zk";
+  @ClassRule
+  public static TemporaryFolder tmpFolder = new TemporaryFolder();
 
-  String ARG_WIDTH = "--width";
-  String ARG_HEIGHT = "--height";
-
+  @BeforeClass
+  public static void init() throws IOException {
+    YarnTestUtils.initOnce(tmpFolder.newFolder());
+  }
+  
+  public TwillRunner getTwillRunner() {
+    TwillRunner runner = YarnTestUtils.twillRunner;
+    assert runner != null;
+    return runner;
+  }
 }
