@@ -24,6 +24,7 @@ import com.google.common.util.concurrent.Service;
 import org.apache.hadoop.examples.render.tools.Utils;
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.ExitUtil;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.twill.api.TwillController;
@@ -65,7 +66,8 @@ public class RenderTwillMain {
     if (fsURI.getScheme().equals("file")) {
       return new LocalLocationFactory(new File("target"));
     } else {
-      return new HDFSLocationFactory(fs, fs.getHomeDirectory()+"/twill");
+      Path homePath = fs.getHomeDirectory();
+      return new HDFSLocationFactory(fs, homePath.toUri().getPath() +"/twill");
     }
   }
   
@@ -107,7 +109,8 @@ public class RenderTwillMain {
 
     final TwillRunnerService twillRunner =
         new YarnTwillRunnerService(
-            conf, zkStr, createLocationFactory());
+            conf, zkStr,
+            createLocationFactory());
     twillRunner.startAndWait();
 
     controller = null;
@@ -123,9 +126,11 @@ public class RenderTwillMain {
 
     controller = twillRunner.prepare(
         new RenderRunnable(
-            () -> {
+            (ctx) -> {
               log.info(params.message);
               touch(dest,"runner");
+              Thread.sleep(30000);
+              System.exit(-1);
             }
             
         ))

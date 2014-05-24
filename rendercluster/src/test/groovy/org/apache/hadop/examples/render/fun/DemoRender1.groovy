@@ -16,22 +16,27 @@
  * limitations under the License.
  */
 
-package org.apache.hadop.examples.render
+package org.apache.hadop.examples.render.fun
 
-import org.apache.hadoop.examples.render.twill.RenderTwillMain
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.apache.hadoop.examples.render.twill.args.Arguments
+import org.apache.hadoop.fs.Path
 import org.junit.Test
 
-class TestCLI extends groovy.test.GroovyAssert implements Arguments {
+@Slf4j
+@CompileStatic
+class DemoRender1 extends FunTestBase implements Arguments, FuntestProperties{
 
   @Test
-  public void testNoZK() throws Throwable {
-    shouldFail(IllegalArgumentException) {
-      RenderTwillMain renderer = new RenderTwillMain();
-      renderer.exec();
-    }
+  public void testRender() throws Throwable {
+
+
+    String destDir = CONFIG.get(KEY_TEST_DEST_DIR)
+    
+    
+    render([ARG_DEST, destDir])
+
   }
-
-
-
+  
 }

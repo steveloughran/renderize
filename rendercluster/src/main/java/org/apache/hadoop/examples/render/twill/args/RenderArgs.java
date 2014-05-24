@@ -26,6 +26,7 @@ import org.apache.hadoop.fs.Path;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,16 +35,17 @@ public class RenderArgs implements Arguments {
 
 
   public static final String TEXT = "--text";
-  private final String[] args;
+  private final Collection<String> argsList;
   public final JCommander commander;
 
   public RenderArgs(String[] args) {
-    this.args = args;
-    commander = new JCommander(this);
+    this(Arrays.asList(args));
   }
 
   public RenderArgs(Collection<String> argsList) {
-    this.args = argsList.toArray(new String[argsList.size()]);
+    Preconditions.checkNotNull(argsList);
+    argsList.stream().forEach(Preconditions::checkNotNull);
+    this.argsList = argsList; 
     commander = new JCommander(this);
   }
 
@@ -69,6 +71,9 @@ public class RenderArgs implements Arguments {
 
   
   public void parseAndValidate() {
+    
+    String[] args = argsList.toArray(new String[argsList.size()]);
+    
     commander.parse(args);
 
     checkSet(ARG_ZOOKEEPER, zookeeper);

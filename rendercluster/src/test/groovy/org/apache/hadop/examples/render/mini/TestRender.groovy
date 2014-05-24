@@ -16,15 +16,18 @@
  * limitations under the License.
  */
 
-package org.apache.hadop.examples.render
+package org.apache.hadop.examples.render.mini
 
+import groovy.transform.CompileStatic
 import org.apache.hadoop.examples.render.twill.RenderTwillMain
 import org.apache.hadoop.examples.render.twill.args.Arguments
-import org.apache.hadop.examples.render.tools.RenderTestBase
+import org.apache.hadop.examples.render.tools.MiniclusterTestBase
 import org.junit.After
 import org.junit.Test
 
-class TestRender extends RenderTestBase implements Arguments {
+@CompileStatic
+
+class TestRender extends MiniclusterTestBase implements Arguments {
 
   @Test
   public void testNoRMBinding() throws Throwable {
@@ -36,7 +39,7 @@ class TestRender extends RenderTestBase implements Arguments {
 
   @Test
   public void testExec() throws Throwable {
-    exec([ARG_DEST,"target/out"])
+    render([ARG_DEST,"target/out"])
     
   }
   

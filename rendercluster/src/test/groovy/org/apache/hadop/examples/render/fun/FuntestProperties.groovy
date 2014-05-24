@@ -15,31 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.hadop.examples.render.fun
 
-package org.apache.hadoop.examples.render.twill;
+import groovy.transform.CompileStatic
 
-import org.apache.twill.api.AbstractTwillRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**
+ * Properties unique to the functional tests
+ */
+@CompileStatic
+public interface FuntestProperties  {
 
-public class RenderRunnable extends AbstractTwillRunnable {
-  public static Logger log = LoggerFactory.getLogger(RenderRunnable.class);
+  /**
+   * Maven Property of location of test conf dir: {@value}
+   */
+  String CONF_DIR_PROP = "test.conf.dir"
 
-  private final RenderTask task;
 
-  public RenderRunnable(RenderTask task) {
-    this.task = task;
-  }
+  String KEY_TEST_NUM_WORKERS = "test.cluster.size"
+  int DEFAULT_NUM_WORKERS = 1
 
-  @Override
-  public void run() {
-    try {
-      task.run(getContext());
-    } catch (Exception e) {
-      log.error("Exception in task {}", e);
-    }
+  String KEY_TEST_ZK_HOSTS = "test.zkhosts";
+  String DEFAULT_ZK_HOSTS = "localhost:2181";
 
-  }
+  String KEY_FUNTESTS_ENABLED = "test.funtest.enabled"
+
+  String CLIENT_CONFIG_FILENAME = "config.xml"
   
+  String KEY_TEST_CONF_XML = "test.conf.xml"
   
+  String KEY_TEST_CONF_DIR = "test.conf.dir"
+  String KEY_TEST_DEST_DIR = "test.dest.dir"
 }

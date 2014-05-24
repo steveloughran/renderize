@@ -29,6 +29,20 @@
 
   <properties>
 
+
+    <!-- build options-->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <build.dependency.fail.on.warning>true</build.dependency.fail.on.warning>
+    <project.java.src.version>1.8</project.java.src.version>
+    <build.redirect.test.output.to.file>false</build.redirect.test.output.to.file>
+
+    <!-- 
+    test options
+    -->
+
+    <test.forkedProcessTimeoutInSeconds>18000</test.forkedProcessTimeoutInSeconds>
+    <test.argLine>-Xmx1024m -XX:+HeapDumpOnOutOfMemoryError</test.argLine>
+    
     <!--
        core artifacts
        -->
@@ -85,6 +99,7 @@
     <maven.cobertura.version>2.5.2</maven.cobertura.version>
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+    <maven-doxia-module-markdown.version>1.4</maven-doxia-module-markdown.version>
     <maven-enforcer-plugin.version>1.0</maven-enforcer-plugin.version>
     <maven-jar-plugin.version>2.3.1</maven-jar-plugin.version>
     <maven.javadoc.version>2.8</maven.javadoc.version>
@@ -98,13 +113,6 @@
     <maven-surefire-report-plugin.version>2.16
     </maven-surefire-report-plugin.version>
     <maven-failsafe-plugin.version>2.16</maven-failsafe-plugin.version>
-
-    <!-- build options-->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <build.dependency.fail.on.warning>true</build.dependency.fail.on.warning>
-    <project.java.src.version>1.8</project.java.src.version>
-    <build.redirect.test.output.to.file>false</build.redirect.test.output.to.file>
-    <maven-doxia-module-markdown.version>1.4</maven-doxia-module-markdown.version>
 
   </properties>
   <repositories>
@@ -135,6 +143,27 @@
   </pluginRepositories>
   <build>
     <plugins>
+
+      <!--read in a build.properties file if defined-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>${maven.properties.version}</version>
+        <executions>
+          <execution>
+            <phase>initialize</phase>
+            <goals>
+              <goal>read-project-properties</goal>
+            </goals>
+            <configuration>
+              <quiet>true</quiet>
+              <files>
+                <file>build.properties</file>
+              </files>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -181,8 +210,45 @@
         </executions>
       </plugin>
 
+      <!-- test -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <!--mvn process fork options-->
+          <reuseForks>false</reuseForks>
+          <forkMode>always</forkMode>
+          <forkCount>1</forkCount>
+          <forkedProcessTimeoutInSeconds>${test.forkedProcessTimeoutInSeconds}
+          </forkedProcessTimeoutInSeconds>
+          <threadCount>1</threadCount>
+          <argLine>${test.argLine}</argLine>
+          <failIfNoTests>true</failIfNoTests>
+
+          <trimStackTrace>false</trimStackTrace>
+          <redirectTestOutputToFile>${build.redirect.test.output.to.file}</redirectTestOutputToFile>
+          <systemPropertyVariables>
+            <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+            <java.awt.headless>true</java.awt.headless>
+            <java.security.krb5.realm>${test.java.security.krb5.realm}</java.security.krb5.realm>
+            <java.security.krb5.kdc>${test.java.security.krb5.kdc}</java.security.krb5.kdc>
+            <!-- this property must be supplied-->
+            <test.conf.dir>${test.conf.dir}</test.conf.dir>
+          </systemPropertyVariables>
+          <includes>
+            <include>**/Test*.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/Test*$*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      
     </plugins>
   </build>
+  
+  
   <reporting>
     <plugins>
       <plugin>
@@ -375,6 +441,21 @@
         <groupId>org.apache.twill</groupId>
         <artifactId>twill-yarn</artifactId>
         <version>${twill.version}</version>
+        <exclusions>
+
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+
+        </exclusions>
+      </dependency>  
+      
+      <dependency>
+        <groupId>org.apache.twill</groupId>
+        <artifactId>twill-yarn</artifactId>
+        <version>${twill.version}</version>
+        <classifier>tests</classifier>
         <exclusions>
 
           <exclusion>

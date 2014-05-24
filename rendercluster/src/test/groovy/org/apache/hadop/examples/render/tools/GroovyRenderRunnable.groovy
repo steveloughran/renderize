@@ -16,30 +16,32 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.examples.render.twill;
+package org.apache.hadop.examples.render.tools
 
-import org.apache.twill.api.AbstractTwillRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.twill.api.AbstractTwillRunnable
 
-public class RenderRunnable extends AbstractTwillRunnable {
-  public static Logger log = LoggerFactory.getLogger(RenderRunnable.class);
+class GroovyRenderRunnable extends AbstractTwillRunnable {
 
-  private final RenderTask task;
+  final Closure action;
 
-  public RenderRunnable(RenderTask task) {
-    this.task = task;
+  GroovyRenderRunnable(Map<String, String> args, Closure action) {
+    super(args)
+    this.action = action
+    assert action != null
+  }
+
+  GroovyRenderRunnable(Closure action) {
+    this.action = action
+    assert action != null
   }
 
   @Override
-  public void run() {
-    try {
-      task.run(getContext());
-    } catch (Exception e) {
-      log.error("Exception in task {}", e);
-    }
-
+  void run() {
+    action();
   }
-  
+
+  static GroovyRenderRunnable instance(Closure closure) {
+    new GroovyRenderRunnable(closure)
+  }
   
 }

@@ -21,11 +21,11 @@ package org.apache.hadoop.examples.render;
 import groovy.util.logging.Slf4j;
 import org.apache.hadoop.examples.render.twill.RenderTwillMain;
 import org.apache.hadoop.examples.render.twill.args.Arguments;
-import org.apache.hadop.examples.render.tools.RenderTestBase;
+import org.apache.hadop.examples.render.tools.MiniclusterTestBase;
 import org.junit.Test;
 
 @Slf4j
-public class TestBasicTwillJob extends RenderTestBase implements Arguments {
+public class TestBasicTwillJob extends MiniclusterTestBase implements Arguments {
 
 
   @Test
