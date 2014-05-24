@@ -33,9 +33,6 @@ public class RenderTwillRunnable extends AbstractTwillRunnable {
       LoggerFactory.getLogger(RenderTwillRunnable.class);
 
 
-  public static final int WIDTH = 512;
-  public static final int HEIGHT = 512;
-
   @Override
   public void run() {
     try {
@@ -44,6 +41,7 @@ public class RenderTwillRunnable extends AbstractTwillRunnable {
       params.parse();
       Path image = params.image;
       Path dest = params.dest;
+      
       int x = params.width;
       int y = params.height;
       String message = params.message;
@@ -51,7 +49,7 @@ public class RenderTwillRunnable extends AbstractTwillRunnable {
       log.info("Rendering {} into {} at ({},{}): {}", image, dest, x, y, message);
       out("================================");
       Renderer renderer = new Renderer(x, y);
-      int x0 = x/2;
+      int x0 = x/4;
       int y0 = y/2;
           
           
