@@ -40,7 +40,7 @@ import java.util.concurrent.TimeoutException
 class TestTwillJpegRenderer extends BaseYarnGroovyTest {
   private static final Logger log = LoggerFactory.getLogger(
       TestTwillJpegRenderer.class);
-  public static final String s = "Hello from Berlin BuzzWords!"
+  public static final String s = "developers sleep less"
 
   @Test
   public void testTwillJpegRenderer()
@@ -68,7 +68,5 @@ class TestTwillJpegRenderer extends BaseYarnGroovyTest {
 
     Services.getCompletionFuture(controller).get(1, TimeUnit.MINUTES);
   }
-
-
 
 }
