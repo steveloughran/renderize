@@ -24,7 +24,8 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -46,6 +47,8 @@ import java.util.Iterator;
  * woefully short of examples.
  */
 public class HadoopImageIO {
+  private static final Logger log =
+      LoggerFactory.getLogger(HadoopImageIO.class);
 
   public static final String JPEG = "jpeg";
   final Configuration conf;
@@ -62,10 +65,14 @@ public class HadoopImageIO {
    * @param conf
    * @throws IOException
    */
-  public HadoopImageIO(Configuration conf
-      ) throws IOException {
+  public HadoopImageIO(Configuration conf) {
     this.conf = Preconditions.checkNotNull(conf);
-    fs = FileSystem.get(conf);
+    try {
+      fs = FileSystem.get(conf);
+    } catch (IOException e) {
+      log.error("Failed to create FS: " +e, e);
+      throw new RuntimeException(e);
+    }
   }
 
   public ImageInputStream openForReading(Path path) throws IOException {
@@ -80,8 +87,14 @@ public class HadoopImageIO {
     return ImageIO.createImageOutputStream(fsDataOutputStream);
   }
 
-  public void writeJPEG(BufferedImage image, Path path) throws IOException {
-    writeJPEG(image, path, true, 0.8f);
+  public void writeJPEG(BufferedImage image, Path path)  {
+    try {
+      writeJPEG(image, path, true, 0.8f);
+    } catch (IOException e) {
+      log.error("Failed to write {}: {}", path.toString(), e, e);
+      throw new RuntimeException(e);
+
+    }
 
   }
 
@@ -120,9 +133,14 @@ public class HadoopImageIO {
     out.close();
   }
 
-  public BufferedImage readJPEG(Path path) throws IOException {
-    ImageInputStream in = openForReading(path);
-    return readJPEG(in);
+  public BufferedImage readJPEG(Path path) {
+    try {
+      ImageInputStream in = openForReading(path);
+      return readJPEG(in);
+    } catch (IOException e) {
+      log.error("Failed to write {}: {}",path.toString(), e, e);
+      throw new RuntimeException(e);
+    }
   }
 
   public BufferedImage readJPEG(ImageInputStream in) throws IOException {

@@ -36,9 +36,7 @@ public class JpegRenderRunnable extends AbstractTwillRunnable {
       LoggerFactory.getLogger(JpegRenderRunnable.class);
   private YarnConfiguration conf = new YarnConfiguration();
 
-  @Override
-  public void run() {
-    try {
+  public void run1() {
       String[] aa = getContext().getApplicationArguments();
       RenderArgs args = new RenderArgs(aa);
       Path dest = args.dest;
@@ -51,15 +49,23 @@ public class JpegRenderRunnable extends AbstractTwillRunnable {
       int x = args.getRenderX(width);
       int y = args.getRenderY(height);
       renderer.render(x, y, message);
-      imageIO.writeJPEG(renderer.image, dest, true, 0.8f);
-    } catch (IOException e) {
-      log.error("Failed to render: {}", e, e);
-      throw new RuntimeException(e);
-    }
+      imageIO.writeJPEG(renderer.image, dest);
+
   }
 
+
+public void run() {
+  String[] aa = getContext().getApplicationArguments();
+  RenderArgs args = new RenderArgs(aa);
+  HadoopImageIO imageIO = new HadoopImageIO(conf);
+  BufferedImage jpeg = imageIO.readJPEG(args.image);
+  Renderer renderer = new Renderer(jpeg);
+  int width = jpeg.getWidth();
+  int height = jpeg.getHeight();
+  int x = args.getRenderX(width);
+  int y = args.getRenderY(height);
+  renderer.render(x, y, args.message);
+  imageIO.writeJPEG(renderer.image, args.dest);
+}
   
-  protected void out(String msg) {
-    log.info(msg);
-  }
 }

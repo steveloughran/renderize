@@ -125,7 +125,7 @@ public class RenderArgs implements Arguments {
     }
   }
 
-  public int getRenderY(int width) {
+  public int getRenderY(int height) {
     if (y >= 0) {
       return y;
     } else {
