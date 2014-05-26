@@ -57,6 +57,17 @@ public class HadoopImageIO {
     this.fs = Preconditions.checkNotNull(fs);
   }
 
+  /**
+   * Create an instance using the default FS
+   * @param conf
+   * @throws IOException
+   */
+  public HadoopImageIO(Configuration conf
+      ) throws IOException {
+    this.conf = Preconditions.checkNotNull(conf);
+    fs = FileSystem.get(conf);
+  }
+
   public ImageInputStream openForReading(Path path) throws IOException {
     FSDataInputStream fsDataInputStream = fs.open(path);
     return ImageIO.createImageInputStream(fsDataInputStream);
@@ -69,7 +80,12 @@ public class HadoopImageIO {
     return ImageIO.createImageOutputStream(fsDataOutputStream);
   }
 
-  public void writeJPEG(BufferedImage image, Path path, boolean overwrite,
+  public void writeJPEG(BufferedImage image, Path path) throws IOException {
+    writeJPEG(image, path, true, 0.8f);
+
+  }
+
+    public void writeJPEG(BufferedImage image, Path path, boolean overwrite,
       float compression) throws IOException {
 
     try(FSDataOutputStream fsDataOutputStream = fs.create(path, overwrite)) {

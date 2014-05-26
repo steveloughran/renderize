@@ -41,29 +41,25 @@ import java.util.concurrent.TimeoutException
 class TestRenderImage extends BaseYarnGroovyTest {
   private static final Logger log = LoggerFactory.getLogger(
       TestRenderImage.class);
-
-  @Rule
-  public TestName name = new TestName();
+  public static final String s = "Hello from Berlin BuzzWords!"
 
   @Test
   public void testRenderImage()
   throws InterruptedException, ExecutionException, TimeoutException {
 
 
-    File dest = new File("target/images/TestRenderImage/${name.methodName}.jpg").absoluteFile
-    dest.delete()
-    File image = new File(TestKeys.NAILS_JPG).absoluteFile
-    assert image.isFile()
+    File destFile = destImageFile
+    destFile.delete()
+
 
     List<String> args = [
-        Arguments.ARG_MESSAGE, "text message",
-        Arguments.ARG_IMAGE, image.toURI().toString(),
+        Arguments.ARG_MESSAGE, s,
         Arguments.ARG_WIDTH, "1024",
         Arguments.ARG_HEIGHT, "768",
 
-        Arguments.ARG_DEST, dest.toURI().toString(),
+        Arguments.ARG_DEST, destFile.toURI().toString(),
     ]
-    new RenderArgs(args).parse()
+    new RenderArgs(args)
 
     TwillController controller =
         twillRunner.prepare(new RenderTwillRunnable())
@@ -73,6 +69,7 @@ class TestRenderImage extends BaseYarnGroovyTest {
 
     Services.getCompletionFuture(controller).get(1, TimeUnit.MINUTES);
   }
+
 
 
 }

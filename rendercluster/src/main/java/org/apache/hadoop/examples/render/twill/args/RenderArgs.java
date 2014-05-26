@@ -46,6 +46,7 @@ public class RenderArgs implements Arguments {
     arguments.stream().forEach(Preconditions::checkNotNull);
     this.arguments = arguments; 
     commander = new JCommander(this);
+    parse();
   }
 
   public Collection<String> getArguments() {

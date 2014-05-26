@@ -91,14 +91,9 @@ public class RenderTwillMain {
       ExecutionException,
       InterruptedException, IOException {
     RenderArgs params = new RenderArgs(argsList);
-    params.parse();
     params.validateForMain();
 
-
-    
-
     String zkStr = params.zookeeper;
-
     
     String rmAddr = conf.get(YarnConfiguration.RM_ADDRESS);
     Preconditions.checkState(!rmAddr.startsWith("0.0.0.0"),

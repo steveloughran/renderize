@@ -18,11 +18,10 @@
 
 package org.apache.hadop.examples.render.fun
 
-import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.yarn.conf.YarnConfiguration
 import org.apache.hadop.examples.render.tools.RenderTestBase
+import org.apache.hadop.examples.render.tools.UtilsForTests
 import org.apache.slider.common.tools.SliderUtils
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -42,7 +41,7 @@ import static org.apache.slider.common.SliderXMLConfKeysForTesting.KEY_TEST_YARN
 
 abstract class FunTestBase extends RenderTestBase implements FuntestProperties {
 
-  public static final String CONF_DIR = sysprop(FuntestProperties.CONF_DIR_PROP)
+  public static final String CONF_DIR = UtilsForTests.sysprop(FuntestProperties.CONF_DIR_PROP)
 
   public static final boolean FUNTESTS_ENABLED
   public static final int TEST_TIMEOUT
@@ -68,7 +67,7 @@ abstract class FunTestBase extends RenderTestBase implements FuntestProperties {
   static {
     CONFIG = loadSliderConf(CONF_XML_FILE);
 
-    TEST_TIMEOUT = getTimeOptionMillis(CONFIG,
+    TEST_TIMEOUT = UtilsForTests.getTimeOptionMillis(CONFIG,
         KEY_TEST_TIMEOUT,
         1000 * DEFAULT_TEST_TIMEOUT_SECONDS)
     FUNTESTS_ENABLED =

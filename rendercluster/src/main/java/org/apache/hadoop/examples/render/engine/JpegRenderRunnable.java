@@ -19,24 +19,22 @@
 package org.apache.hadoop.examples.render.engine;
 
 import org.apache.hadoop.examples.render.twill.args.RenderArgs;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.twill.api.AbstractTwillRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class RenderTwillRunnable extends AbstractTwillRunnable {
+/**
+ * Load and render a JPEG
+ */
+public class JpegRenderRunnable extends AbstractTwillRunnable {
   private static final Logger log =
-      LoggerFactory.getLogger(RenderTwillRunnable.class);
+      LoggerFactory.getLogger(JpegRenderRunnable.class);
   private YarnConfiguration conf = new YarnConfiguration();
-
-  public RenderTwillRunnable() {
-
-
-  }
 
   @Override
   public void run() {
@@ -44,17 +42,13 @@ public class RenderTwillRunnable extends AbstractTwillRunnable {
       String[] aa = getContext().getApplicationArguments();
       RenderArgs args = new RenderArgs(aa);
       Path dest = args.dest;
-      int width = args.width;
-      int height = args.height;
       String message = args.message;
-      out("================================");
-      log.info("Rendering {} into {} at ({},{}): {}", dest, width, height, message);
-      out("================================");
-      Renderer renderer = new Renderer(width, height);
-      int x0 = width/4;
-      int y0 = height/2;
-      renderer.render(width / 4, y0, message);
       HadoopImageIO imageIO = new HadoopImageIO(conf);
+      BufferedImage jpeg = imageIO.readJPEG(args.image);
+      Renderer renderer = new Renderer(jpeg);
+      int width = jpeg.getWidth();
+      int height = jpeg.getHeight();
+      renderer.render(width / 4, height/2, message);
       imageIO.writeJPEG(renderer.image, dest, true, 0.8f);
     } catch (IOException e) {
       log.error("Failed to render: {}", e, e);
@@ -62,23 +56,6 @@ public class RenderTwillRunnable extends AbstractTwillRunnable {
     }
   }
 
-
-  
-  public void run2() {
-    try {
-      String[] aa = getContext().getApplicationArguments();
-      RenderArgs args = new RenderArgs(aa);
-      Path dest = args.dest;
-      int w = args.width;
-      int h = args.height;
-      Renderer r = new Renderer(w, h);
-      r.render(w / 4, h / 2, args.message);
-      HadoopImageIO imageIO = new HadoopImageIO(conf);
-      imageIO.writeJPEG(r.image, dest);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
   
   protected void out(String msg) {
     log.info(msg);

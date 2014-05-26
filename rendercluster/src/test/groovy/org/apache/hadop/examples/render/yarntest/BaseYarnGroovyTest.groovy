@@ -19,10 +19,15 @@
 package org.apache.hadop.examples.render.yarntest
 
 import org.apache.hadoop.examples.render.yarntest.YarnTestUtils
+import org.apache.hadop.examples.render.tools.UtilsForTests
 import org.apache.twill.api.TwillRunner
+import org.junit.After
+import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.junit.ClassRule
+import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.junit.rules.TestName
 
 class BaseYarnGroovyTest extends groovy.test.GroovyAssert {
 
@@ -34,9 +39,25 @@ class BaseYarnGroovyTest extends groovy.test.GroovyAssert {
     YarnTestUtils.initOnce(tmpFolder.newFolder());
   }
   
+  @AfterClass
+  public static void killTwill() {
+    UtilsForTests.killJavaProcesses("TwillLauncher", 9)
+  }
+  
   public TwillRunner getTwillRunner() {
     TwillRunner runner = YarnTestUtils.twillRunner;
     assert runner != null;
     return runner;
   }
+
+
+  @Rule
+  public TestName name = new TestName();
+
+
+  public File getDestImageFile() {
+    new File(
+        "target/images/${name.methodName}/${name.methodName}.jpg").absoluteFile
+  }
+
 }

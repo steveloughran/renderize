@@ -41,14 +41,6 @@ class RenderTestBase extends groovy.test.GroovyAssert {
   protected static String filesystemURL;
 
 
-  public static String sysprop(String key) {
-    def property = System.getProperty(key)
-    if (!property) {
-      throw new RuntimeException("Undefined property $key")
-    }
-    return property
-  }
-
   def static void render(YarnConfiguration config, List<String> args) {
     assert zookeeper != null
     assert resourceManager != null
@@ -103,44 +95,5 @@ class RenderTestBase extends groovy.test.GroovyAssert {
     svc.start();
   }
 
-  protected static void describe(String s) {
-    log.info("");
-    log.info("===============================");
-    log.info(s);
-    log.info("===============================");
-    log.info("");
-  }
 
-  public void killJavaProcesses(String grepString, int signal) {
-
-    GString bashCommand = "jps -l| grep ${grepString} | awk '{print \$1}' | xargs kill $signal"
-    log.info("Bash command = $bashCommand")
-    Process bash = ["bash", "-c", bashCommand].execute()
-    bash.waitFor()
-
-    log.info(bash.in.text)
-    log.warn(bash.err.text)
-  }
-
-  /**
-   * Get a time option in seconds if set, otherwise the default value (also in seconds).
-   * This operation picks up the time value as a system property if set -that
-   * value overrides anything in the test file
-   * @param conf
-   * @param key
-   * @param defVal
-   * @return
-   */
-  public static int getTimeOptionMillis(
-      Configuration conf,
-      String key,
-      int defValMillis) {
-    int val = conf.getInt(key, 0)
-    val = Integer.getInteger(key, val)
-    int time = 1000 * val
-    if (time == 0) {
-      time = defValMillis
-    }
-    return time;
-  }
 }

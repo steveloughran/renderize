@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.examples.render.engine;
 
+import com.google.common.base.Preconditions;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -39,10 +41,23 @@ public class Renderer {
     this.width = width;
     this.height = height;
     image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    chooseFont(Font.SANS_SERIF, 0, 48);
+    chooseFont();
     clear();
   }
-  
+
+  public Renderer(BufferedImage image) {
+    Preconditions.checkNotNull(image);
+    this.image = image;
+    this.width = image.getWidth();
+    this.height =image.getHeight();
+    chooseFont();
+  }
+
+  protected void chooseFont() {
+    chooseFont(Font.SANS_SERIF, 0, 48);
+  }
+
+
   public void chooseFont(String fontname, int attrs, int size) {
     font = new Font(fontname, attrs, size);
   }
@@ -70,5 +85,13 @@ public class Renderer {
 
   public BufferedImage getImage() {
     return image;
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
   }
 }

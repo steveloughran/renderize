@@ -46,7 +46,7 @@ class TestYarnLocal extends BaseYarnGroovyTest {
     TwillRunner runner = YarnTestUtils.twillRunner;
 
     def args = [Arguments.ARG_MESSAGE, "text message"]
-    new RenderArgs(args).parse()
+    new RenderArgs(args)
     
     TwillController controller =
         runner.prepare(new StdoutRunnable())

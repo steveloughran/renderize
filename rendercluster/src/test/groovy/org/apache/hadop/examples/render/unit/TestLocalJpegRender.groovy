@@ -21,31 +21,23 @@ package org.apache.hadop.examples.render.unit
 import org.apache.hadoop.examples.render.engine.HadoopImageIO
 import org.apache.hadoop.examples.render.engine.Renderer
 import org.apache.hadoop.examples.render.tools.Utils
-import org.apache.hadoop.fs.FileSystem as HadoopFS
-import org.apache.hadoop.yarn.conf.YarnConfiguration
-import org.junit.Rule
+import org.apache.hadop.examples.render.TestKeys
 import org.junit.Test
-import org.junit.rules.TestName
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
 
-class TestLocalRender extends BaseUnitTest {
+class TestLocalJpegRender extends BaseUnitTest {
   private static final Logger log = LoggerFactory.getLogger(
-      TestLocalRender.class);
-
-
-  public static final int WIDTH = 512;
-  public static final int HEIGHT = 256;
+      TestLocalJpegRender.class);
 
   @Test
-  public void testRenderDirect() throws Throwable {
+  public void testLocalJpegRenderDirect() throws Throwable {
     File dest = createDestFile()
 
-    Renderer renderer = renderTestImage()
     HadoopImageIO imageIO = createImageIO()
+    Renderer renderer = renderTestImage(imageIO)
 
     def outputStream = new FileOutputStream(dest);
     def imageOutputStream = ImageIO.createImageOutputStream(outputStream)
@@ -65,11 +57,11 @@ class TestLocalRender extends BaseUnitTest {
 
 
   @Test
-  public void testRenderViaHadoopFilesystem() throws Throwable {
+  public void testLocalJpegRenderViaHadoopFilesystem() throws Throwable {
     File dest = createDestFile()
 
-    Renderer renderer = renderTestImage()
     HadoopImageIO imageIO = createImageIO()
+    Renderer renderer = renderTestImage(imageIO)
 
     imageIO.writeJPEG(renderer.image,
         Utils.fileToPath(dest), true, 0.8f);
@@ -80,8 +72,13 @@ class TestLocalRender extends BaseUnitTest {
   }
 
 
-  def Renderer renderTestImage() {
-    Renderer renderer = new Renderer(WIDTH, HEIGHT);
+  def Renderer renderTestImage(HadoopImageIO imageIO) {
+    def src = new File(TestKeys.TEST_IMAGE_JPG)
+    assert src.exists();
+    def jpeg = imageIO.readJPEG(
+        Utils.fileToPath(src))
+    
+    Renderer renderer = new Renderer(jpeg);
     renderer.render(30, 100, name.methodName);
     renderer
   }

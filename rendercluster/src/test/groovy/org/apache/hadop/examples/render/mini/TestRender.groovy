@@ -21,13 +21,16 @@ package org.apache.hadop.examples.render.mini
 import groovy.transform.CompileStatic
 import org.apache.hadoop.examples.render.twill.RenderTwillMain
 import org.apache.hadoop.examples.render.twill.args.Arguments
+import org.apache.hadop.examples.render.TestKeys
 import org.apache.hadop.examples.render.tools.MiniclusterTestBase
+import org.apache.hadop.examples.render.tools.UtilsForTests
 import org.junit.After
 import org.junit.Test
 
 @CompileStatic
 
 class TestRender extends MiniclusterTestBase implements Arguments {
+
 
   @Test
   public void testNoRMBinding() throws Throwable {
@@ -39,13 +42,12 @@ class TestRender extends MiniclusterTestBase implements Arguments {
 
   @Test
   public void testExec() throws Throwable {
-    render([ARG_DEST,"target/out"])
-    
+    render([ARG_DEST, "target/out"])
+
   }
   
   @After
-  public void killLaunhcer() {
-    killJavaProcesses("TwillLauncher", 9)
-    
+  public void killTwill() {
+    UtilsForTests.killJavaProcesses(TestKeys.TWILL_LAUNCHER, 9)
   }
 }

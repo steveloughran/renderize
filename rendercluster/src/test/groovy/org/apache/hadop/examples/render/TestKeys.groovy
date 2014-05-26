@@ -19,5 +19,6 @@
 package org.apache.hadop.examples.render
 
 class TestKeys {
-  public static final String NAILS_JPG = "src/test/resources/images/nails.jpg"
+  public static final String TEST_IMAGE_JPG = "src/test/resources/images/nails.jpg"
+  public static final String TWILL_LAUNCHER = "TwillLauncher"
 }
