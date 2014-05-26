@@ -43,4 +43,7 @@ public interface Arguments {
   String ARG_WIDTH = "--width";
   String ARG_HEIGHT = "--height";
 
+  String ARG_X = "--x";
+  String ARG_Y = "--y";
+
 }

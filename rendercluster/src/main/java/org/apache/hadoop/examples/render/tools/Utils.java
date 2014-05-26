@@ -86,4 +86,9 @@ public class Utils {
   public static Path fileToPath(File file) {
     return new Path(file.getAbsoluteFile().toURI());
   }
+  
+  public static String fileToURIString(File file) {
+    return file.getAbsoluteFile().toURI().toString();
+  }
+  
 }

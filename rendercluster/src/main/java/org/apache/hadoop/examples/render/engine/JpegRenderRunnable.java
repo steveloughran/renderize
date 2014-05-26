@@ -48,7 +48,9 @@ public class JpegRenderRunnable extends AbstractTwillRunnable {
       Renderer renderer = new Renderer(jpeg);
       int width = jpeg.getWidth();
       int height = jpeg.getHeight();
-      renderer.render(width / 4, height/2, message);
+      int x = args.getRenderX(width);
+      int y = args.getRenderY(height);
+      renderer.render(x, y, message);
       imageIO.writeJPEG(renderer.image, dest, true, 0.8f);
     } catch (IOException e) {
       log.error("Failed to render: {}", e, e);

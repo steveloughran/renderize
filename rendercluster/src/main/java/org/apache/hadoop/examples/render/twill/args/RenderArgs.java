@@ -79,6 +79,12 @@ public class RenderArgs implements Arguments {
 
   @Parameter(names = ARG_HEIGHT)
   public int height;
+
+  @Parameter(names = ARG_X)
+  public int x = -1;
+
+  @Parameter(names = ARG_Y)
+  public int y = -1;
   
   
   public void parse() {
@@ -111,4 +117,20 @@ public class RenderArgs implements Arguments {
   }
 
 
+  public int getRenderX(int width) {
+    if (x >= 0) {
+      return x;
+    } else {
+      return width / 4;
+    }
+  }
+
+  public int getRenderY(int width) {
+    if (y >= 0) {
+      return y;
+    } else {
+      return height / 2;
+    }
+  }
+  
 }
