@@ -20,15 +20,12 @@ package org.apache.hadop.examples.render.yarntest
 
 import groovy.transform.CompileStatic
 import org.apache.hadoop.examples.render.engine.RenderTwillRunnable
-import org.apache.hadoop.examples.render.twill.Slf4JLogHandler
+import org.apache.hadoop.examples.render.tools.Slf4JLogHandler
 import org.apache.hadoop.examples.render.twill.args.Arguments
 import org.apache.hadoop.examples.render.twill.args.RenderArgs
-import org.apache.hadop.examples.render.TestKeys
 import org.apache.twill.api.TwillController
 import org.apache.twill.common.Services
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestName
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

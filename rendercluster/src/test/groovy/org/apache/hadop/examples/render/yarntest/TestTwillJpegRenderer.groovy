@@ -21,11 +21,10 @@ package org.apache.hadop.examples.render.yarntest
 import groovy.transform.CompileStatic
 import org.apache.hadoop.examples.render.engine.JpegRenderRunnable
 import org.apache.hadoop.examples.render.tools.Utils
-import org.apache.hadoop.examples.render.twill.Slf4JLogHandler
+import org.apache.hadoop.examples.render.tools.Slf4JLogHandler
 import org.apache.hadoop.examples.render.twill.args.Arguments
 import org.apache.hadoop.examples.render.twill.args.RenderArgs
 import org.apache.hadop.examples.render.TestKeys
-import org.apache.hadop.examples.render.tools.UtilsForTests
 import org.apache.twill.api.TwillController
 import org.apache.twill.common.Services
 import org.junit.Test

@@ -19,7 +19,7 @@
 package org.apache.hadop.examples.render.unit
 
 import groovy.util.logging.Slf4j
-import org.apache.hadoop.examples.render.twill.Slf4JLogHandler
+import org.apache.hadoop.examples.render.tools.Slf4JLogHandler
 import org.apache.twill.api.logging.LogEntry
 import org.junit.Test
 
@@ -28,7 +28,8 @@ class TestFormatter {
   @Test
   public void testLogEntry() throws Throwable {
     LogEntryImpl entry = entry()
-    def s = Slf4JLogHandler.formatLogEntry(entry)
+    Slf4JLogHandler handler = new Slf4JLogHandler(log)
+    def s = handler.formatLogEntry(entry)
     log.info s;
     assert s.contains("threadname2")
   }
